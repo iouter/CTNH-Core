@@ -1,0 +1,43 @@
+# Publishes the project to GitHub Releases, CurseForge, and Modrinth
+name: Release
+on:
+  workflow_dispatch
+
+env:
+  # link to the changelog with a format code for the version
+  CHANGELOG_LOCATION: "Changelog is available [here](https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }})"
+  # type of release
+  RELEASE_TYPE: 'beta'
+
+concurrency:
+  group: publish-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # needed to create GitHub releases
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Build
+        uses: ./.github/actions/build_setup
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build Project
+        run: ./gradlew build --warning-mode all --build-cache
+
+      - name: Publish to GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "build/libs/*.jar"
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          tag_name: names
