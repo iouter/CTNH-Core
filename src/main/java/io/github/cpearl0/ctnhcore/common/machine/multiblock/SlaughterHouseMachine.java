@@ -98,7 +98,7 @@ public class SlaughterHouseMachine extends WorkableElectricMultiblockMachine {
                     }
                     var fakePlayer = new FakePlayer(level, new GameProfile(smachine.uuid, "slaughter"));
                     var loottable = Objects.requireNonNull(level.getServer()).getLootData().getLootTable(new ResourceLocation(mob.split(":")[0] + ":entities/" + mob.split(":")[1]));
-                    var lootparams;
+                    LootParams lootparams;
                     try {
                         lootparams = new LootParams.Builder((ServerLevel) machine.getLevel())
                                 .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, fakePlayer)
