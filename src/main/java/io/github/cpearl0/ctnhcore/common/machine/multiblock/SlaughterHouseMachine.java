@@ -98,12 +98,16 @@ public class SlaughterHouseMachine extends WorkableElectricMultiblockMachine {
                     }
                     var fakePlayer = new FakePlayer(level, new GameProfile(smachine.uuid, "slaughter"));
                     var loottable = Objects.requireNonNull(level.getServer()).getLootData().getLootTable(new ResourceLocation(mob.split(":")[0] + ":entities/" + mob.split(":")[1]));
-                    var lootparams = new LootParams.Builder((ServerLevel) machine.getLevel())
-                            .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, fakePlayer)
-                            .withParameter(LootContextParams.THIS_ENTITY, mobentity)
-                            .withParameter(LootContextParams.DAMAGE_SOURCE, new DamageSources(level.getServer().registryAccess()).mobAttack(fakePlayer))
-                            .withParameter(LootContextParams.ORIGIN, machine.getPos().getCenter())
-                            .create(loottable.getParamSet());
+                    try {
+                        var lootparams = new LootParams.Builder((ServerLevel) machine.getLevel())
+                                .withParameter(LootContextParams.LAST_DAMAGE_PLAYER, fakePlayer)
+                                .withParameter(LootContextParams.THIS_ENTITY, mobentity)
+                                .withParameter(LootContextParams.DAMAGE_SOURCE, new DamageSources(level.getServer().registryAccess()).mobAttack(fakePlayer))
+                                .withParameter(LootContextParams.ORIGIN, machine.getPos().getCenter())
+                                .create(loottable.getParamSet());
+                    } catch(Exception e) {
+                        return recipe.copy();
+                    }
                     var loots = loottable.getRandomItems(lootparams);
                     loots.forEach(itemStack -> {
                         if (!itemStack.isEmpty()){
